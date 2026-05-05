@@ -347,9 +347,20 @@
       color: var(--text);
     }
 
+    .predict-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(320px, 1fr);
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .predict-sidebar {
+      position: sticky;
+      top: 100px;
+    }
+
     #result-box {
       display: none;
-      margin-top: 2rem;
       border-radius: var(--card-r);
       border: 1px solid var(--border);
       overflow: hidden;
@@ -1117,6 +1128,12 @@
     }
 
     @media (max-width: 980px) {
+      .predict-layout {
+        grid-template-columns: 1fr;
+      }
+      .predict-sidebar {
+        position: static;
+      }
       .metrics-layout {
         grid-template-columns: 1fr;
       }
@@ -1223,7 +1240,9 @@
 
     <!-- ── PREDICT ── -->
     <div class="tab-panel active" id="tab-predict">
-      <form id="predict-form">
+      <div class="predict-layout">
+        <div class="predict-main">
+          <form id="predict-form">
 
         <div class="section-label">Demographics</div>
         <div class="form-grid">
@@ -1379,11 +1398,15 @@
         </div>
       </form>
 
-      <div id="result-box"></div>
-
       <div class="disclaimer">
         ⚠️ <strong>Disclaimer:</strong> This tool is for academic purposes only and does not constitute medical advice.
         Always consult a qualified healthcare professional for clinical diagnosis.
+      </div>
+        </div>
+
+        <div class="predict-sidebar">
+          <div id="result-box"></div>
+        </div>
       </div>
     </div>
 

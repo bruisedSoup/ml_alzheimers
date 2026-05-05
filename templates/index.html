@@ -1234,7 +1234,7 @@
   <nav>
     <div class="nav-logo">NeuroScan</span><img src="/neuroscan.png" alt="NeuroScan logo"></div>
     <div class="nav-actions">
-      <div class="nav-badge">{{ final_model_name }} · F1 {{ winner_f1 }}</div>
+      <div class="nav-badge" id="nav-badge">Loading...</div>
       <a class="nav-link" href="https://github.com/bruisedSoup/ml_alzheimers" target="_blank" rel="noopener noreferrer"
         aria-label="Open GitHub repository" title="Open GitHub repository">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1670,54 +1670,8 @@
         and Logistic Regression were selected as the top 2 models for hyperparameter tuning.
       </p>
       <div class="metrics-layout">
-        {% set rf = cv_results.get('Random Forest') %}
-        {% if rf %}
-        <div class="model-card featured">
-          <div class="featured-head">
-            <div>
-              <div class="featured-kicker">Top Cross-Validation Model</div>
-              <div class="featured-title">🏆 Random Forest</div>
-              <div class="featured-sub">
-                Highest-performing classifier in this comparison, with the strongest overall CV F1 score before final
-                deployment selection.
-              </div>
-            </div>
-            <span
-              style="font-size:.68rem;background:rgba(63,185,80,.15);color:var(--accent2);border-radius:99px;padding:.22rem .65rem;font-weight:700;">Tuned</span>
-          </div>
-          <div class="featured-metrics">
-            <div class="mc-metric"><strong>{{ "%.1f"|format(rf['CV Accuracy']*100) }}%</strong>CV Accuracy</div>
-            <div class="mc-metric"><strong>{{ "%.1f"|format(rf['CV Precision']*100) }}%</strong>CV Precision</div>
-            <div class="mc-metric"><strong>{{ "%.1f"|format(rf['CV Recall']*100) }}%</strong>CV Recall</div>
-            <div class="mc-metric"><strong>{{ "%.4f"|format(rf['CV F1 Score']) }}</strong>CV F1 Score</div>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="metrics-side">
-          {% for name, cv in cv_results.items() %}
-          {% if name != 'Random Forest' %}
-          <div class="model-card {% if name == 'Logistic Regression' %}runner-up{% endif %}">
-            <div class="mc-name">
-              {{ name }}
-              {% if name == 'Logistic Regression' %}
-              <span
-                style="font-size:.65rem;background:rgba(227,179,65,.16);color:var(--warn);border-radius:99px;padding:.15rem .55rem;font-weight:700;">Top
-                2</span>
-              <span
-                style="font-size:.65rem;background:rgba(88,166,255,.15);color:var(--accent);border-radius:99px;padding:.15rem .55rem;font-weight:600;">Tuned</span>
-              {% endif %}
-            </div>
-            <div class="mc-metrics">
-              <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Accuracy']*100) }}%</strong>CV Accuracy</div>
-              <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Precision']*100) }}%</strong>CV Precision</div>
-              <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Recall']*100) }}%</strong>CV Recall</div>
-              <div class="mc-metric"><strong>{{ "%.4f"|format(cv['CV F1 Score']) }}</strong>CV F1 Score</div>
-            </div>
-          </div>
-          {% endif %}
-          {% endfor %}
-        </div>
+        <div id="featured-model"></div>
+        <div class="metrics-side" id="metrics-side"></div>
       </div>
     </div>
 
@@ -1732,27 +1686,17 @@
         <div class="winner-icon">🏆</div>
         <div>
           <div class="winner-label">Deployed Model</div>
-          <div class="winner-name">{{ final_model_name }}</div>
+          <div class="winner-name" id="winner-name">Loading...</div>
         </div>
         <div class="winner-f1">
-          <div class="f1-val">{{ winner_f1 }}</div>
+          <div class="f1-val" id="winner-f1">–</div>
           <div class="f1-label">Test F1 Score</div>
         </div>
       </div>
 
       <!-- Best params -->
       <div class="metrics-section-title">Best Hyperparameters Found</div>
-      <div class="params-box">
-        <strong>Logistic Regression:</strong>
-        {% for k, v in best_lr_params.items() %}
-        {{ k.replace('model__','') }} = {{ v }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-        <br>
-        <strong>Random Forest:</strong>
-        {% for k, v in best_rf_params.items() %}
-        {{ k.replace('model__','') }} = {{ v }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-      </div>
+      <div class="params-box" id="params-box">Loading…</div>
 
       <!-- Before vs After table -->
       <div class="metrics-section-title">Before vs After Tuning</div>
@@ -1767,17 +1711,7 @@
               <th>F1 Score</th>
             </tr>
           </thead>
-          <tbody>
-            {% for name, m in tuning_results.items() %}
-            <tr class="{{ 'after-row' if 'After' in name else 'before-row' }}">
-              <td>{{ name }}</td>
-              <td>{{ "%.4f"|format(m['Accuracy']) }}</td>
-              <td>{{ "%.4f"|format(m['Precision']) }}</td>
-              <td>{{ "%.4f"|format(m['Recall']) }}</td>
-              <td>{{ "%.4f"|format(m['F1 Score']) }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
+          <tbody id="tuning-table-body"></tbody>
         </table>
       </div>
     </div>
@@ -1793,122 +1727,15 @@
           Target: <code>Diagnosis</code> (0 = No AD, 1 = AD). Class imbalance: 64.6% / 35.4%.</p>
         <p><strong>Pipeline:</strong> MinMaxScaler → SMOTE → 5 classifiers compared via 5-fold CV → Top 2 (Random
           Forest, Logistic Regression) tuned with GridSearchCV → Winner selected by F1.</p>
-        <p><strong>Deployed Model:</strong> {{ final_model_name }} — Test F1 Score: {{ winner_f1 }}</p>
+        <p id="about-model-line"><strong>Deployed Model:</strong> Loading…</p>
         <p><strong>Stack:</strong> Python · scikit-learn · imbalanced-learn · Flask · HTML/CSS/JS</p>
       </div>
     </div>
 
   </div>
 
-  <script>
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      });
-    });
-
-    document.getElementById('predict-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = {};
-      new FormData(e.target).forEach((v, k) => data[k] = v);
-
-      document.getElementById('btn-text').textContent = 'Analyzing…';
-      document.getElementById('spinner').style.display = 'block';
-      document.querySelector('.btn-predict').disabled = true;
-
-      try {
-        const res = await fetch('/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        const json = await res.json();
-        json.error ? showError(json.error) : showResult(json);
-      } catch (err) {
-        showError('Network error. Is the server running?');
-      } finally {
-        document.getElementById('btn-text').textContent = 'Run Prediction';
-        document.getElementById('spinner').style.display = 'none';
-        document.querySelector('.btn-predict').disabled = false;
-      }
-    });
-
-    function showResult(json) {
-      const isAD = json.prediction === 1;
-      const color = isAD ? '#f85149' : '#3fb950';
-      const bgColor = isAD ? 'rgba(248,81,73,.08)' : 'rgba(63,185,80,.08)';
-      const barColor = isAD ? '#f85149' : '#3fb950';
-      const confidence = isAD ? json.prob_ad : json.prob_no_ad;
-      const confLabel = isAD ? 'Probability of Alzheimer\'s' : 'Probability of No Alzheimer\'s';
-      const descText = isAD
-        ? 'The model detects signs of Alzheimer\u2019s risk based on your inputs. Please consult a qualified healthcare professional for a proper clinical evaluation.'
-        : 'The model does not detect significant Alzheimer\u2019s risk based on your inputs. Continue regular health monitoring and consult your doctor for guidance.';
-
-      const placeholder = document.getElementById('result-placeholder');
-      if (placeholder) placeholder.style.display = 'none';
-
-      const box = document.getElementById('result-box');
-      box.style.borderColor = isAD ? 'rgba(248,81,73,.25)' : 'rgba(63,185,80,.25)';
-      box.innerHTML = `
-    <div style="background:${bgColor};padding:1.25rem 1.5rem;border-bottom:1px solid ${isAD ? 'rgba(248,81,73,.15)' : 'rgba(63,185,80,.15)'}">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Prediction Result</div>
-      <div style="display:flex;align-items:center;gap:.6rem;">
-        <span style="font-size:1.3rem;">${isAD ? '⚠️' : '✅'}</span>
-        <div style="font-family:'DM Serif Display',serif;font-size:1.55rem;font-weight:700;color:${color};line-height:1.2;">${json.label}</div>
-      </div>
-    </div>
-    <div class="result-body">
-      <div style="margin-bottom:1.2rem;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem;">
-          <div style="font-size:.82rem;color:var(--muted);font-weight:600;">Model Confidence</div>
-          <div style="font-size:1.6rem;font-weight:800;color:${color};line-height:1;">${confidence}%</div>
-        </div>
-        <div style="height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;">
-          <div id="conf-bar" style="height:100%;width:0%;background:${barColor};border-radius:99px;transition:width .6s ease;" data-w="${confidence}"></div>
-        </div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:.35rem;">${confLabel}: ${confidence}%</div>
-      </div>
-      <p style="font-size:.84rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;">${descText}</p>
-      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
-        ℹ️ This tool is for <strong>educational purposes only</strong> and is based on a machine learning model trained on survey data. It is not a clinical diagnosis. Always consult a qualified mental health professional.
-      </div>
-      <button onclick="resetForm()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:0;">↺ Reset and try again</button>
-    </div>`;
-      box.style.display = 'block';
-      setTimeout(() => {
-        const bar = box.querySelector('#conf-bar');
-        if (bar) bar.style.width = bar.dataset.w + '%';
-      }, 80);
-    }
-
-    function showError(msg) {
-      const placeholder = document.getElementById('result-placeholder');
-      if (placeholder) placeholder.style.display = 'none';
-      const box = document.getElementById('result-box');
-      box.style.borderColor = 'rgba(248,81,73,.3)';
-      box.innerHTML = `
-    <div style="background:rgba(248,81,73,.08);padding:1.25rem 1.5rem;border-bottom:1px solid rgba(248,81,73,.15)">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Prediction Result</div>
-      <div style="display:flex;align-items:center;gap:.6rem;">
-        <span style="font-size:1.3rem;">❌</span>
-        <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:700;color:#f85149;">Error</div>
-      </div>
-    </div>
-    <div class="result-body">
-      <p style="font-size:.84rem;color:var(--muted);line-height:1.7;">${msg}</p>
-      <button onclick="resetForm()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:0;margin-top:1rem;">↺ Reset and try again</button>
-    </div>`;
-      box.style.display = 'block';
-    }
-
-    function resetForm() {
-      document.getElementById('predict-form').reset();
-      const box = document.getElementById('result-box');
-      box.style.display = 'none';
-      box.innerHTML = '';
-      const placeholder = document.getElementById('result-placeholder');
-      if (placeholder) placeholder.style.display = 'flex';
-    }
-  </script>
+  <script src="/config.js"></script>
+  <script src="/app.js"></script>
 </body>
 
 </html>

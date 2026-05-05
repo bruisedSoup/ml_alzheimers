@@ -8,7 +8,7 @@ import json
 
 import joblib
 import pandas as pd
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="public", static_url_path="")
@@ -44,15 +44,7 @@ def build_app_payload():
 
 @app.route("/")
 def index():
-    return render_template(
-        "index.html",
-        final_model_name=FINAL_MODEL_NAME,
-        winner_f1=WINNER_F1,
-        cv_results=CV_RESULTS,
-        tuning_results=TUNING_RESULTS,
-        best_lr_params=BEST_LR_PARAMS,
-        best_rf_params=BEST_RF_PARAMS,
-    )
+    return send_file(BASE_DIR / "templates" / "index.html")
 
 
 @app.route("/api/health")

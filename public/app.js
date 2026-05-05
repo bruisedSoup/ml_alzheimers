@@ -73,43 +73,68 @@ document.getElementById("predict-form").addEventListener("submit", async (e) => 
 function showResult(json) {
   const isAD = json.prediction === 1;
   const color = isAD ? "#f85149" : "#3fb950";
-  const icon = isAD ? "Warning" : "Clear";
-  const box = document.getElementById("result-box");
+  const bgColor = isAD ? "rgba(248,81,73,.08)" : "rgba(63,185,80,.08)";
+  const barColor = isAD ? "#f85149" : "#3fb950";
+  const confidence = isAD ? json.prob_ad : json.prob_no_ad;
+  const confLabel = isAD ? "Probability of Alzheimer's" : "Probability of No Alzheimer's";
+  const descText = isAD
+    ? "The model detects signs of Alzheimer’s risk based on your inputs. Please consult a qualified healthcare professional for a proper clinical evaluation."
+    : "The model does not detect significant Alzheimer’s risk based on your inputs. Continue regular health monitoring and consult your doctor for guidance.";
 
-  box.style.borderColor = isAD ? "rgba(248,81,73,.3)" : "rgba(63,185,80,.3)";
+  const placeholder = document.getElementById("result-placeholder");
+  if (placeholder) placeholder.style.display = "none";
+
+  const box = document.getElementById("result-box");
+  box.style.borderColor = isAD ? "rgba(248,81,73,.25)" : "rgba(63,185,80,.25)";
   box.innerHTML = `
-    <div class="result-header" style="background:${isAD ? "rgba(248,81,73,.06)" : "rgba(63,185,80,.06)"}">
-      <div class="result-icon" style="background:${isAD ? "rgba(248,81,73,.1)" : "rgba(63,185,80,.1)"};border:2px solid ${color}">${icon}</div>
-      <div>
-        <div class="result-title" style="color:${color}">${json.label}</div>
-        <div class="result-sub">Based on provided clinical features · ${appState.final_model_name}</div>
+    <div style="background:${bgColor};padding:1.25rem 1.5rem;border-bottom:1px solid ${isAD ? "rgba(248,81,73,.15)" : "rgba(63,185,80,.15)"}">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Prediction Result</div>
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <span style="font-size:1.3rem;">${isAD ? "⚠️" : "✅"}</span>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.55rem;font-weight:700;color:${color};line-height:1.2;">${json.label}</div>
       </div>
     </div>
     <div class="result-body">
-      <div class="prob-row">
-        <div class="prob-label">No Alzheimer's</div>
-        <div class="prob-bar-wrap"><div class="prob-bar" style="width:0%;background:#3fb950" data-w="${json.prob_no_ad}"></div></div>
-        <div class="prob-val" style="color:#3fb950">${json.prob_no_ad}%</div>
+      <div style="margin-bottom:1.2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem;">
+          <div style="font-size:.82rem;color:var(--muted);font-weight:600;">Model Confidence</div>
+          <div style="font-size:1.6rem;font-weight:800;color:${color};line-height:1;">${confidence}%</div>
+        </div>
+        <div style="height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;">
+          <div id="conf-bar" style="height:100%;width:0%;background:${barColor};border-radius:99px;transition:width .6s ease;" data-w="${confidence}"></div>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.35rem;">${confLabel}: ${confidence}%</div>
       </div>
-      <div class="prob-row">
-        <div class="prob-label">Alzheimer's Detected</div>
-        <div class="prob-bar-wrap"><div class="prob-bar" style="width:0%;background:#f85149" data-w="${json.prob_ad}"></div></div>
-        <div class="prob-val" style="color:#f85149">${json.prob_ad}%</div>
+      <p style="font-size:.84rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;">${descText}</p>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">
+        ℹ️ This tool is for <strong>educational purposes only</strong> and is based on a machine learning model trained on survey data. It is not a clinical diagnosis. Always consult a qualified mental health professional.
       </div>
+      <button onclick="resetForm()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:0;">↺ Reset and try again</button>
     </div>`;
   box.style.display = "block";
-  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
   setTimeout(() => {
-    box.querySelectorAll(".prob-bar").forEach((bar) => {
-      bar.style.width = `${bar.dataset.w}%`;
-    });
+    const bar = box.querySelector("#conf-bar");
+    if (bar) bar.style.width = bar.dataset.w + "%";
   }, 80);
 }
 
 function showError(msg) {
+  const placeholder = document.getElementById("result-placeholder");
+  if (placeholder) placeholder.style.display = "none";
   const box = document.getElementById("result-box");
   box.style.borderColor = "rgba(248,81,73,.3)";
-  box.innerHTML = `<div class="result-header" style="background:rgba(248,81,73,.06)"><div class="result-icon" style="border:2px solid #f85149">Error</div><div><div class="result-title" style="color:#f85149">Error</div><div class="result-sub">${escapeHtml(msg)}</div></div></div>`;
+  box.innerHTML = `
+    <div style="background:rgba(248,81,73,.08);padding:1.25rem 1.5rem;border-bottom:1px solid rgba(248,81,73,.15)">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">Prediction Result</div>
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <span style="font-size:1.3rem;">❌</span>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:700;color:#f85149;">Error</div>
+      </div>
+    </div>
+    <div class="result-body">
+      <p style="font-size:.84rem;color:var(--muted);line-height:1.7;">${escapeHtml(msg)}</p>
+      <button onclick="resetForm()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:0;margin-top:1rem;">↺ Reset and try again</button>
+    </div>`;
   box.style.display = "block";
 }
 
@@ -209,6 +234,8 @@ function resetForm() {
   const box = document.getElementById("result-box");
   box.style.display = "none";
   box.innerHTML = "";
+  const placeholder = document.getElementById("result-placeholder");
+  if (placeholder) placeholder.style.display = "flex";
 }
 
 loadMeta();

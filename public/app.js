@@ -162,8 +162,8 @@ function renderMetrics(cvResults) {
         <div class="mc-name">
           ${escapeHtml(name)}
           ${name === "Logistic Regression"
-            ? '<span style="font-size:.65rem;background:rgba(227,179,65,.16);color:var(--warn);border-radius:99px;padding:.15rem .55rem;font-weight:700;">Top 2</span><span style="font-size:.65rem;background:rgba(88,166,255,.15);color:var(--accent);border-radius:99px;padding:.15rem .55rem;font-weight:600;">Tuned</span>'
-            : ""}
+        ? '<span style="font-size:.65rem;background:rgba(227,179,65,.16);color:var(--warn);border-radius:99px;padding:.15rem .55rem;font-weight:700;">Top 2</span><span style="font-size:.65rem;background:rgba(88,166,255,.15);color:var(--accent);border-radius:99px;padding:.15rem .55rem;font-weight:600;">Tuned</span>'
+        : ""}
         </div>
         <div class="mc-metrics">
           <div class="mc-metric"><strong>${formatPercent(cv["CV Accuracy"])}</strong>CV Accuracy</div>

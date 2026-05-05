@@ -3,12 +3,11 @@ app.py  –  Alzheimer's Disease Risk Predictor
 Flask web application
 """
 
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify
 import joblib, json
 import pandas as pd
-import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="public", static_url_path="")
 
 # ── Load model & metrics once at startup ─────────────────────────────────────
 model = joblib.load("models/rf_model.pkl")
@@ -36,12 +35,6 @@ def index():
         best_rf_params=BEST_RF_PARAMS,
         winner_f1=WINNER_F1,
     )
-
-
-@app.route("/eda_visuals/<path:filename>")
-def eda_visuals(filename):
-    return send_from_directory(os.path.join(app.root_path, "templates", "eda_visuals"), filename)
-
 
 @app.route("/predict", methods=["POST"])
 def predict():

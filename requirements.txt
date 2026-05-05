@@ -1,4 +1,6 @@
 flask
+flask-cors
+gunicorn
 scikit-learn
 imbalanced-learn
 pandas

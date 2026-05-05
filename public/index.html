@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroScan — Alzheimer's Risk Predictor</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/neuroscan.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/neuroscan.png">
+  <link rel="apple-touch-icon" href="/neuroscan.png">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --danger: #f85149;
+      --warn: #e3b341;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --card-r: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13, 17, 23, .85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      color: var(--accent);
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-logo img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-badge {
+      font-size: .72rem;
+      background: linear-gradient(135deg, rgba(63, 185, 80, .2), rgba(63, 185, 80, .08));
+      border: 1px solid rgba(63, 185, 80, .4);
+      padding: .4rem .9rem;
+      border-radius: 99px;
+      color: #d7f7df;
+      font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      text-decoration: none;
+      transition: transform .15s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: rgba(88, 166, 255, .1);
+    }
+
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 2.5rem;
+      background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(88, 166, 255, .08) 0%, transparent 70%);
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+      margin-bottom: .75rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      font-size: .95rem;
+      line-height: 1.7;
+    }
+
+    .chip {
+      display: inline-block;
+      background: rgba(63, 185, 80, .12);
+      border: 1px solid rgba(63, 185, 80, .35);
+      color: var(--accent2);
+      font-size: .78rem;
+      padding: .3rem .9rem;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      padding: .75rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .intro-copy {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      max-width: 860px;
+    }
+
+    .section-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .field label {
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .field label .req {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+
+    .field input,
+    .field select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      padding: .65rem .9rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+    }
+
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 3rem;
+      background-image:
+        linear-gradient(135deg, transparent 50%, var(--accent) 50%),
+        linear-gradient(225deg, transparent 50%, var(--accent) 50%);
+      background-position:
+        calc(100% - 20px) calc(50% - 3px),
+        calc(100% - 14px) calc(50% - 3px);
+      background-size:
+        7px 7px,
+        7px 7px;
+      background-repeat: no-repeat;
+    }
+
+    .field select:hover {
+      border-color: rgba(88, 166, 255, .45);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, .15);
+    }
+
+    .field select option {
+      background: var(--surface2);
+    }
+
+    .field .hint {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .form-footer {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-predict {
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      padding: .8rem 2rem;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .btn-predict:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      padding: .8rem 1.5rem;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    #result-box {
+      display: none;
+      margin-top: 2rem;
+      border-radius: var(--card-r);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: slideUp .3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-header {
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .result-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+    }
+
+    .result-sub {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+
+    .result-body {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: .75rem;
+    }
+
+    .prob-label {
+      font-size: .82rem;
+      width: 180px;
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+
+    .prob-bar-wrap {
+      flex: 1;
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .prob-bar {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .6s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .prob-val {
+      font-size: .85rem;
+      font-weight: 600;
+      width: 42px;
+      text-align: right;
+    }
+
+    /* ── Metrics tab ── */
+    .metrics-section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      margin: 2rem 0 1rem;
+      color: var(--text);
+    }
+
+    .metrics-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .metrics-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.15fr) minmax(0, 2fr);
+      gap: 1.1rem;
+      align-items: start;
+    }
+
+    .metrics-side {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+      transition: border-color .2s;
+    }
+
+    .model-card:hover {
+      border-color: var(--accent);
+    }
+
+    .model-card.featured {
+      border: 1px solid rgba(63, 185, 80, .45);
+      background:
+        radial-gradient(circle at top right, rgba(63, 185, 80, .14), transparent 38%),
+        rgba(63, 185, 80, .05);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .22);
+      padding: 1.45rem 1.6rem;
+    }
+
+    .model-card.featured:hover {
+      border-color: rgba(63, 185, 80, .7);
+    }
+
+    .model-card.runner-up {
+      border: 1px solid rgba(227, 179, 65, .45);
+      background:
+        radial-gradient(circle at top right, rgba(227, 179, 65, .12), transparent 38%),
+        rgba(227, 179, 65, .04);
+    }
+
+    .model-card.runner-up:hover {
+      border-color: rgba(227, 179, 65, .75);
+    }
+
+    .model-card .mc-name {
+      font-weight: 600;
+      font-size: .88rem;
+      margin-bottom: .8rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .featured-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .featured-kicker {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent2);
+      font-weight: 700;
+      margin-bottom: .45rem;
+    }
+
+    .featured-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin-bottom: .35rem;
+    }
+
+    .featured-sub {
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.65;
+    }
+
+    .trophy-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(63, 185, 80, .14);
+      border: 1px solid rgba(63, 185, 80, .34);
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .featured-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .8rem;
+    }
+
+    .mc-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+    }
+
+    .mc-metric {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .mc-metric strong {
+      display: block;
+      font-size: .95rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .model-card.featured .mc-metric {
+      padding: .8rem .9rem;
+      border-radius: 10px;
+      background: rgba(13, 17, 23, .22);
+      border: 1px solid rgba(63, 185, 80, .14);
+    }
+
+    .model-card.featured .mc-metric strong {
+      font-size: 1.1rem;
+      color: var(--accent2);
+    }
+
+    /* tuning table */
+    .tuning-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tuning-table th {
+      text-align: left;
+      padding: .6rem 1rem;
+      background: var(--surface2);
+      color: var(--muted);
+      font-weight: 500;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tuning-table td {
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tuning-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tuning-table tr.after-row {
+      background: rgba(63, 185, 80, .04);
+    }
+
+    .tuning-table tr.after-row td:first-child {
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .tuning-table tr.before-row td:first-child {
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--card-r);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .01);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrap .tuning-table {
+      margin-bottom: 0;
+      min-width: 720px;
+    }
+
+    .winner-card {
+      background: rgba(63, 185, 80, .06);
+      border: 1px solid rgba(63, 185, 80, .3);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .winner-icon {
+      font-size: 1.8rem;
+    }
+
+    .winner-label {
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .winner-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--accent2);
+    }
+
+    .winner-f1 {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .winner-f1 .f1-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .winner-f1 .f1-label {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .params-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: .8rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .params-box strong {
+      color: var(--text);
+    }
+
+    .eda-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .eda-card,
+    .workflow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .eda-card h3,
+    .workflow-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.55rem;
+      margin-bottom: .9rem;
+      color: var(--text);
+    }
+
+    .eda-image {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      object-fit: contain;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .eda-image.tall {
+      max-height: 340px;
+    }
+
+    .eda-image.wide {
+      max-height: none;
+    }
+
+    .insight-box {
+      background: rgba(88, 166, 255, .06);
+      border: 1px solid rgba(88, 166, 255, .22);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .insight-box strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: .55rem;
+    }
+
+    .insight-box ul {
+      margin: 0;
+      padding-left: 1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: .86rem;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .workflow-step {
+      background:
+        radial-gradient(circle at top right, rgba(88, 166, 255, .12), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, .015), rgba(255, 255, 255, 0)),
+        var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.05rem 1.15rem 1.15rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 190px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .12);
+    }
+
+    .workflow-kicker {
+      font-size: .84rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+
+    .workflow-step h4 {
+      font-size: 1rem;
+      margin-bottom: .5rem;
+      color: var(--text);
+    }
+
+    .workflow-step p,
+    .workflow-card p {
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.7;
+    }
+
+    .workflow-step::after {
+      content: '';
+      position: absolute;
+      inset: auto -20px -20px auto;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: rgba(88, 166, 255, .06);
+      filter: blur(2px);
+    }
+
+    .workflow-orbit {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(88, 166, 255, .12);
+      border: 1px solid rgba(88, 166, 255, .24);
+      font-size: 1.05rem;
+    }
+
+    .workflow-top {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      margin-bottom: .9rem;
+    }
+
+    .workflow-hero {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(88, 166, 255, .14), transparent 28%),
+        radial-gradient(circle at 82% 30%, rgba(63, 185, 80, .12), transparent 26%),
+        linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, 0)),
+        var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1.35rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(260px, .9fr);
+      gap: 1.25rem;
+      align-items: center;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .16);
+    }
+
+    .workflow-hero h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.95rem;
+      margin-bottom: .55rem;
+      color: var(--text);
+    }
+
+    .workflow-hero p {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.75;
+      max-width: 640px;
+    }
+
+    .workflow-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .8rem;
+    }
+
+    .workflow-stat {
+      background: rgba(13, 17, 23, .3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: .9rem 1rem;
+    }
+
+    .workflow-stat strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: .2rem;
+    }
+
+    .workflow-stat span {
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+
+    .workflow-code {
+      display: inline-block;
+      margin-top: .75rem;
+      padding: .3rem .6rem;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: .76rem;
+    }
+
+    .resource-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      align-items: start;
+    }
+
+    .resource-btn {
+      display: block;
+      padding: .85rem;
+      border-radius: 18px;
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #20262f, #1a2028);
+      color: var(--text);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, .18);
+    }
+
+    .resource-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .resource-btn.github:hover {
+      border-color: #a855f7;
+      color: #d8b4fe;
+      box-shadow: 0 0 0 4px rgba(168, 85, 247, .12);
+    }
+
+    .resource-btn.colab:hover {
+      border-color: #facc15;
+      color: #fde047;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, .12);
+    }
+
+    .resource-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .7rem;
+      margin-bottom: .8rem;
+    }
+
+    .resource-file {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      min-width: 0;
+    }
+
+    .resource-file-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+      color: #8b949e;
+      flex-shrink: 0;
+    }
+
+    .resource-file-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .resource-file-title {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .resource-menu {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .resource-preview {
+      min-height: 160px;
+      border-radius: 14px;
+      border: 1px solid #d8e1ee;
+      background: linear-gradient(180deg, #ffffff, #f7faff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: .8rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resource-preview::after {
+      content: '';
+      position: absolute;
+      inset: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(18, 26, 39, .05);
+      pointer-events: none;
+    }
+
+    .resource-preview-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    .resource-preview-icon svg {
+      width: 54px;
+      height: 54px;
+      display: block;
+      fill: currentColor;
+      transform: scale(2.1);
+      transform-origin: center;
+    }
+
+    .resource-preview-icon.github {
+      color: #7e22ce;
+    }
+
+    .resource-preview-icon.colab {
+      color: #ca8a04;
+    }
+
+    .resource-btn svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .resource-label {
+      color: var(--muted);
+      font-size: .8rem;
+      margin-top: .75rem;
+      line-height: 1.6;
+    }
+
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 2rem;
+      max-width: 720px;
+      line-height: 1.75;
+      font-size: .92rem;
+      color: var(--muted);
+    }
+
+    .about-card h3 {
+      font-family: 'DM Serif Display', serif;
+      color: var(--text);
+      font-size: 1.2rem;
+      margin-bottom: .75rem;
+    }
+
+    .about-card p+p {
+      margin-top: 1rem;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(13, 17, 23, .4);
+      border-top-color: #0d1117;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .disclaimer {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      padding: .75rem 1rem;
+      background: rgba(227, 179, 65, .06);
+      border: 1px solid rgba(227, 179, 65, .2);
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      .eda-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .metrics-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      nav {
+        padding: .9rem 1rem;
+        gap: .9rem;
+        align-items: flex-start;
+      }
+
+      .nav-logo {
+        font-size: 1.15rem;
+        gap: .45rem;
+        flex-shrink: 0;
+      }
+
+      .nav-logo img {
+        width: 28px;
+        height: 28px;
+      }
+
+      .nav-actions {
+        gap: .5rem;
+        max-width: 58%;
+      }
+
+      .nav-badge {
+        font-size: .68rem;
+        padding: .35rem .7rem;
+        line-height: 1.35;
+      }
+
+      .nav-link {
+        width: 34px;
+        height: 34px;
+      }
+
+      .workflow-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .nav-actions {
+        max-width: 100%;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav-logo {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-logo">NeuroScan</span><img src="/neuroscan.png" alt="NeuroScan logo"></div>
+    <div class="nav-actions">
+      <div class="nav-badge" id="nav-badge">Connecting to backend...</div>
+      <a class="nav-link" href="https://github.com/bruisedSoup/ml_alzheimers" target="_blank" rel="noopener noreferrer"
+        aria-label="Open GitHub repository" title="Open GitHub repository">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.09 3.29 9.4 7.86 10.92.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.3 1.19-3.11-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.19 1.19a11 11 0 0 1 5.8 0c2.21-1.5 3.18-1.19 3.18-1.19.64 1.59.24 2.76.12 3.05.74.81 1.19 1.85 1.19 3.11 0 4.42-2.68 5.39-5.24 5.68.41.35.77 1.03.77 2.08 0 1.5-.01 2.71-.01 3.08 0 .31.21.68.8.56a11.52 11.52 0 0 0 7.85-10.92C23.5 5.66 18.34.5 12 .5Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="chip">✦ IT325 Machine Learning</div>
+    <h1>Alzheimer's<br><em>Risk Predictor</em></h1>
+    <p>Enter patient clinical data below to generate an Alzheimer's disease risk assessment powered by a tuned Random
+      Forest classifier trained on 2,149 patient records.</p>
+  </div>
+
+  <div class="container">
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="predict">🧠 Predict</button>
+      <button class="tab-btn" data-tab="eda">🧪 EDA</button>
+      <button class="tab-btn" data-tab="workflow">🔎 Workflow</button>
+      <button class="tab-btn" data-tab="metrics">📊 Model Metrics</button>
+      <button class="tab-btn" data-tab="tuning">⚙️ Tuning Results</button>
+      <button class="tab-btn" data-tab="about">ℹ️ About</button>
+    </div>
+
+    <!-- ── PREDICT ── -->
+    <div class="tab-panel active" id="tab-predict">
+      <form id="predict-form">
+
+        <div class="section-label">Demographics</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Age <span class="req">*</span></label>
+            <input type="number" name="Age" min="60" max="90" placeholder="e.g. 75" required>
+            <span class="hint">Range: 60–90</span>
+          </div>
+          <div class="field">
+            <label>Gender <span class="req">*</span></label>
+            <select name="Gender" required>
+              <option value="" disabled selected>Select gender</option>
+              <option value="0">Female</option>
+              <option value="1">Male</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Education Level <span class="req">*</span></label>
+            <select name="EducationLevel" required>
+              <option value="" disabled selected>Select level</option>
+              <option value="0">None</option>
+              <option value="1">High School</option>
+              <option value="2">Bachelor's</option>
+              <option value="3">Higher</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>BMI <span class="req">*</span></label>
+            <input type="number" name="BMI" step="any" min="15" max="40" placeholder="e.g. 25 or 25.0" required>
+            <span class="hint">15 – 40</span>
+          </div>
+        </div>
+
+        <div class="section-label">Lifestyle</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Smoking</label>
+            <select name="Smoking">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Physical Activity (hrs/week) <span class="req">*</span></label>
+            <input type="number" name="PhysicalActivity" step="any" min="0" max="10" placeholder="e.g. 3 or 3.5"
+              required>
+            <span class="hint">0 – 10 hrs/week</span>
+          </div>
+        </div>
+
+        <div class="section-label">Medical History</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Family History of Alzheimer's</label>
+            <select name="FamilyHistoryAlzheimers">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cardiovascular Disease</label>
+            <select name="CardiovascularDisease">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Diabetes</label>
+            <select name="Diabetes">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Depression</label>
+            <select name="Depression">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Hypertension</label>
+            <select name="Hypertension">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Head Injury</label>
+            <select name="HeadInjury">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label">Cognitive Assessments</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>MMSE Score <span class="req">*</span></label>
+            <input type="number" name="MMSE" step="any" min="0" max="30" placeholder="e.g. 22 or 22.5" required>
+            <span class="hint">Mini-Mental State Exam: 0–30</span>
+          </div>
+          <div class="field">
+            <label>Functional Assessment <span class="req">*</span></label>
+            <input type="number" name="FunctionalAssessment" step="any" min="0" max="10" placeholder="e.g. 6 or 6.0"
+              required>
+            <span class="hint">0 – 10</span>
+          </div>
+          <div class="field">
+            <label>Memory Complaints</label>
+            <select name="MemoryComplaints">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Behavioral Problems</label>
+            <select name="BehavioralProblems">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Disorientation</label>
+            <select name="Disorientation">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Difficulty Completing Tasks</label>
+            <select name="DifficultyCompletingTasks">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Forgetfulness</label>
+            <select name="Forgetfulness">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn-predict">
+            <span id="btn-text">Run Prediction</span>
+            <div class="spinner" id="spinner"></div>
+          </button>
+          <button type="button" class="btn-reset" onclick="resetForm()">Clear</button>
+        </div>
+      </form>
+
+      <div id="result-box"></div>
+
+      <div class="disclaimer">
+        ⚠️ <strong>Disclaimer:</strong> This tool is for academic purposes only and does not constitute medical advice.
+        Always consult a qualified healthcare professional for clinical diagnosis.
+      </div>
+    </div>
+
+    <!-- ── EDA ── -->
+    <div class="tab-panel" id="tab-eda">
+      <p class="intro-copy">
+        This section surfaces the exploratory data analysis used before model training so the app shows not just the
+        final predictor, but also the patterns observed in the Alzheimer’s dataset.
+      </p>
+
+      <div class="eda-grid">
+        <div class="eda-card">
+          <h3>Diagnosis Distribution</h3>
+          <img class="eda-image tall" src="/eda_visuals/diagnosis.png"
+            alt="Diagnosis distribution chart">
+        </div>
+
+        <div class="eda-card">
+          <h3>Class Balance Pie Chart</h3>
+          <img class="eda-image tall" src="/eda_visuals/piechart.png"
+            alt="Diagnosis pie chart">
+        </div>
+      </div>
+
+      <div class="eda-card" style="margin-bottom:1.25rem;">
+        <div class="insight-box">
+          <strong>Insights</strong>
+          <ul>
+            <li>64.6% No Alzheimer's (1,389 patients) and 35.4% Alzheimer's (760 patients).</li>
+            <li>The diagnosis distribution and pie chart together show a moderate class imbalance in the dataset.</li>
+            <li>This imbalance supports the use of SMOTE during training so the minority Alzheimer's class is better
+              represented.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="eda-card">
+        <h3>Feature Correlation Heatmap</h3>
+        <img class="eda-image wide" src="/eda_visuals/heatmap.png"
+          alt="Feature correlation heatmap">
+        <div class="insight-box">
+          <strong>Insights</strong>
+          <ul>
+            <li>The strongest predictors of Alzheimer’s disease are Functional Assessment, Memory Complaints, MMSE
+              Score, and Disorientation.</li>
+            <li>These variables show the highest correlation with diagnosis and the clearest separation between
+              patients and non-patients.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORKFLOW ── -->
+    <div class="tab-panel" id="tab-workflow">
+      <p class="intro-copy">
+        For transparency, this tab summarizes what the training pipeline does in
+        <code>train_model.py</code>, mirroring the Alzheimer’s notebook workflow from data loading through model
+        selection.
+      </p>
+
+      <div class="workflow-hero">
+        <div>
+          <h3>Pipeline Transparency</h3>
+          <p>
+            This workflow shows how raw Alzheimer’s clinical data moves through preprocessing, imbalance handling,
+            model comparison, tuning, and final deployment. It gives viewers a clearer audit trail of how the app’s
+            predictions are produced.
+          </p>
+        </div>
+        <div class="workflow-stats">
+          <div class="workflow-stat">
+            <strong>5 models compared</strong>
+            <span>Baseline classifiers evaluated before final tuning.</span>
+          </div>
+          <div class="workflow-stat">
+            <strong>SMOTE applied</strong>
+            <span>Class imbalance handled during training and CV.</span>
+          </div>
+          <div class="workflow-stat">
+            <strong>5-fold CV</strong>
+            <span>Accuracy, precision, recall, and F1 all reviewed.</span>
+          </div>
+          <div class="workflow-stat">
+            <strong>1 deployed winner</strong>
+            <span>The strongest tuned model is saved for the app.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">📂</div>
+            <div class="workflow-kicker">Step 1</div>
+          </div>
+          <h4>Load and Prepare Data</h4>
+          <p>The dataset is loaded from <code>Gonzales_AlzheimersDisease.csv</code>. <code>PatientID</code> is removed,
+            <code>Diagnosis</code> becomes the target, and all remaining clinical variables are kept as model
+            features.
+          </p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">✂️</div>
+            <div class="workflow-kicker">Step 2</div>
+          </div>
+          <h4>Split Train and Test Sets</h4>
+          <p>The pipeline performs an 80/20 train-test split with <code>random_state=42</code> to keep evaluation
+            consistent with the notebook implementation.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">📏</div>
+            <div class="workflow-kicker">Step 3</div>
+          </div>
+          <h4>Scale Features</h4>
+          <p>Numeric inputs are normalized with <code>MinMaxScaler</code> so models compare features on a shared range
+            before classification.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">🧠</div>
+            <div class="workflow-kicker">Step 4</div>
+          </div>
+          <h4>Train 5 Baseline Models</h4>
+          <p>Logistic Regression, K-Nearest Neighbors, Decision Tree, Random Forest, and Naive Bayes are first trained
+            as baseline classifiers.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">⚖️</div>
+            <div class="workflow-kicker">Step 5</div>
+          </div>
+          <h4>Handle Class Imbalance</h4>
+          <p>SMOTE is inserted into the training pipeline so the minority Alzheimer’s class is oversampled during model
+            evaluation.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">📊</div>
+            <div class="workflow-kicker">Step 6</div>
+          </div>
+          <h4>Run 5-Fold Cross-Validation</h4>
+          <p>Each SMOTE-enabled pipeline is scored using stratified 5-fold cross-validation on accuracy, precision,
+            recall, and F1 score.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">🛠️</div>
+            <div class="workflow-kicker">Step 7</div>
+          </div>
+          <h4>Tune Top Models</h4>
+          <p>Logistic Regression and Random Forest are selected for <code>GridSearchCV</code> hyperparameter tuning
+            because they emerged as the strongest candidates.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-top">
+            <div class="workflow-orbit">🏁</div>
+            <div class="workflow-kicker">Step 8</div>
+          </div>
+          <h4>Select the Deployed Winner</h4>
+          <p>The tuned model with the better test-set F1 score is saved and deployed in this web app as the final
+            predictor.</p>
+        </div>
+      </div>
+
+      <div class="workflow-card">
+        <h3>Saved Outputs</h3>
+        <p>The workflow stores the chosen classifier in <code>models/rf_model.pkl</code> and the evaluation summary in
+          <code>models/model_metrics.json</code>, which powers the tabs shown in this interface.
+        </p>
+        <div class="resource-links">
+          <a class="resource-btn github" href="https://github.com/bruisedSoup/ml_alzheimers" target="_blank"
+            rel="noopener noreferrer" aria-label="Open GitHub repository" title="Open GitHub repository">
+            <div class="resource-head">
+              <div class="resource-file">
+                <span class="resource-file-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Zm0 2.5L16.5 7H14V4.5ZM7 20V4h5v4a1 1 0 0 0 1 1h4v11H7Z">
+                    </path>
+                  </svg>
+                </span>
+                <div class="resource-file-title">ml_alzheimers_github</div>
+              </div>
+              <div class="resource-menu">⋮</div>
+            </div>
+            <div class="resource-preview">
+              <div class="resource-preview-icon github">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.09 3.29 9.4 7.86 10.92.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.3 1.19-3.11-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.19 1.19a11 11 0 0 1 5.8 0c2.21-1.5 3.18-1.19 3.18-1.19.64 1.59.24 2.76.12 3.05.74.81 1.19 1.85 1.19 3.11 0 4.42-2.68 5.39-5.24 5.68.41.35.77 1.03.77 2.08 0 1.5-.01 2.71-.01 3.08 0 .31.21.68.8.56a11.52 11.52 0 0 0 7.85-10.92C23.5 5.66 18.34.5 12 .5Z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </a>
+          <a class="resource-btn colab"
+            href="https://colab.research.google.com/drive/122uafOfrdwm7FltiXAE-PVwSLmhTuOm4#scrollTo=bb51f13d-96bb-400c-89c3-ca12660b4051"
+            target="_blank" rel="noopener noreferrer" aria-label="Open Colab notebook" title="Open Colab notebook">
+            <div class="resource-head">
+              <div class="resource-file">
+                <span class="resource-file-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Zm0 2.5L16.5 7H14V4.5ZM7 20V4h5v4a1 1 0 0 0 1 1h4v11H7Z">
+                    </path>
+                  </svg>
+                </span>
+                <div class="resource-file-title">alzheimers_colab_notebook</div>
+              </div>
+              <div class="resource-menu">⋮</div>
+            </div>
+            <div class="resource-preview">
+              <div class="resource-preview-icon colab">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M7.73 5.05A4.9 4.9 0 0 0 2.86 9.9v4.2A4.9 4.9 0 0 0 7.73 18.95h3.11v-2.18H7.73a2.7 2.7 0 0 1-2.69-2.67V9.9a2.7 2.7 0 0 1 2.69-2.67h3.11V5.05H7.73Zm5.43 0v2.18h3.11a2.7 2.7 0 0 1 2.69 2.67v4.2a2.7 2.7 0 0 1-2.69 2.67h-3.11v2.18h3.11a4.9 4.9 0 0 0 4.87-4.85V9.9a4.9 4.9 0 0 0-4.87-4.85h-3.11ZM9.54 8.51v6.98h2.18V8.51H9.54Zm2.74 0v6.98h2.18V8.51h-2.18Z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="resource-label">GitHub source and Colab notebook</div>
+        <span class="workflow-code">Transparency source: train_model.py</span>
+      </div>
+    </div>
+
+    <!-- ── METRICS (CV) ── -->
+    <div class="tab-panel" id="tab-metrics">
+      <p class="intro-copy">
+        Five classifiers were evaluated via 5-fold stratified cross-validation with SMOTE oversampling. Random Forest
+        and Logistic Regression were selected as the top 2 models for hyperparameter tuning.
+      </p>
+      <div class="metrics-layout">
+        <div id="featured-model"></div>
+        <div class="metrics-side" id="metrics-side"></div>
+      </div>
+
+    <!-- ?????? TUNING ?????? -->
+    <div class="tab-panel" id="tab-tuning">
+      <p class="intro-copy">
+        GridSearchCV (5-fold, scoring=F1) was applied to the top 2 models. The winner is deployed in this application.
+      </p>
+
+      <!-- Winner -->
+      <div class="winner-card">
+        <div class="winner-icon">🏆</div>
+        <div>
+          <div class="winner-label">Deployed Model</div>
+          <div class="winner-name" id="winner-name">Loading...</div>
+        </div>
+        <div class="winner-f1">
+          <div class="f1-val" id="winner-f1">--</div>
+          <div class="f1-label">Test F1 Score</div>
+        </div>
+      </div>
+
+      <!-- Best params -->
+      <div class="metrics-section-title">Best Hyperparameters Found</div>
+      <div class="params-box" id="params-box">Loading hyperparameters...</div>
+
+      <!-- Before vs After table -->
+      <div class="metrics-section-title">Before vs After Tuning</div>
+      <div class="table-wrap">
+        <table class="tuning-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Accuracy</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1 Score</th>
+            </tr>
+          </thead>
+          <tbody id="tuning-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ABOUT ── -->
+    <div class="tab-panel" id="tab-about">
+      <div class="about-card">
+        <h3>About This Project</h3>
+        <p>NeuroScan is an end-to-end machine learning web application built for <strong>IT325 – Machine
+            Learning</strong> (2nd Sem SY 2025–2026). It predicts the likelihood of Alzheimer's Disease diagnosis from
+          structured clinical patient data.</p>
+        <p><strong>Dataset:</strong> <em>Gonzales_AlzheimersDisease.csv</em> — 2,149 patient records × 21 features.
+          Target: <code>Diagnosis</code> (0 = No AD, 1 = AD). Class imbalance: 64.6% / 35.4%.</p>
+        <p><strong>Pipeline:</strong> MinMaxScaler → SMOTE → 5 classifiers compared via 5-fold CV → Top 2 (Random
+          Forest, Logistic Regression) tuned with GridSearchCV → Winner selected by F1.</p>
+        <p id="about-model-line"><strong>Deployed Model:</strong> Loading...</p>
+        <p><strong>Stack:</strong> Python · scikit-learn · imbalanced-learn · Flask · HTML/CSS/JS</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="/app.js"></script>
+</body>
+
+</html>
+
+

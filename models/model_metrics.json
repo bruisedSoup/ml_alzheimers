@@ -1,0 +1,94 @@
+{
+  "feature_cols": [
+    "Age",
+    "BMI",
+    "Smoking",
+    "PhysicalActivity",
+    "FamilyHistoryAlzheimers",
+    "CardiovascularDisease",
+    "Diabetes",
+    "Depression",
+    "Hypertension",
+    "MMSE",
+    "FunctionalAssessment",
+    "MemoryComplaints",
+    "BehavioralProblems",
+    "Disorientation",
+    "DifficultyCompletingTasks",
+    "Forgetfulness",
+    "Gender",
+    "EducationLevel",
+    "HeadInjury"
+  ],
+  "final_model_name": "Tuned Random Forest",
+  "cv_results": {
+    "Logistic Regression": {
+      "CV Accuracy": 0.7574,
+      "CV Precision": 0.6316,
+      "CV Recall": 0.7546,
+      "CV F1 Score": 0.6872
+    },
+    "K-Nearest Neighbors": {
+      "CV Accuracy": 0.6707,
+      "CV Precision": 0.5274,
+      "CV Recall": 0.654,
+      "CV F1 Score": 0.5839
+    },
+    "Decision Tree": {
+      "CV Accuracy": 0.7504,
+      "CV Precision": 0.6377,
+      "CV Recall": 0.6822,
+      "CV F1 Score": 0.6588
+    },
+    "Random Forest": {
+      "CV Accuracy": 0.7906,
+      "CV Precision": 0.692,
+      "CV Recall": 0.7365,
+      "CV F1 Score": 0.713
+    },
+    "Naive Bayes": {
+      "CV Accuracy": 0.7283,
+      "CV Precision": 0.6009,
+      "CV Recall": 0.6887,
+      "CV F1 Score": 0.6416
+    }
+  },
+  "tuning_results": {
+    "Logistic Regression (Before)": {
+      "Accuracy": 0.7605,
+      "Precision": 0.633,
+      "Recall": 0.7778,
+      "F1 Score": 0.6979
+    },
+    "Random Forest (Before)": {
+      "Accuracy": 0.7977,
+      "Precision": 0.6988,
+      "Recall": 0.7582,
+      "F1 Score": 0.7273
+    },
+    "Logistic Regression (After)": {
+      "Accuracy": 0.7628,
+      "Precision": 0.6335,
+      "Recall": 0.7908,
+      "F1 Score": 0.7035
+    },
+    "Random Forest (After)": {
+      "Accuracy": 0.793,
+      "Precision": 0.6778,
+      "Recall": 0.7974,
+      "F1 Score": 0.7327
+    }
+  },
+  "best_lr_params": {
+    "model__C": "0.1",
+    "model__l1_ratio": "1.0",
+    "model__solver": "saga"
+  },
+  "best_rf_params": {
+    "model__max_depth": "10",
+    "model__max_features": "sqrt",
+    "model__min_samples_split": "2",
+    "model__n_estimators": "200"
+  },
+  "winner_f1": 0.7327
+}

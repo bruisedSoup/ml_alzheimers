@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroScan — Alzheimer's Risk Predictor</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --danger: #f85149;
+      --warn: #e3b341;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --card-r: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13, 17, 23, .85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      color: var(--accent);
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-badge {
+      font-size: .72rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: .25rem .7rem;
+      border-radius: 99px;
+      color: var(--muted);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 2.5rem;
+      background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(88, 166, 255, .08) 0%, transparent 70%);
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+      margin-bottom: .75rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      font-size: .95rem;
+      line-height: 1.7;
+    }
+
+    .chip {
+      display: inline-block;
+      background: rgba(63, 185, 80, .12);
+      border: 1px solid rgba(63, 185, 80, .35);
+      color: var(--accent2);
+      font-size: .78rem;
+      padding: .3rem .9rem;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: .5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      padding: .75rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .intro-copy {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      max-width: 860px;
+    }
+
+    .section-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .field label {
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .field label .req {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+
+    .field input,
+    .field select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      padding: .65rem .9rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, .15);
+    }
+
+    .field select option {
+      background: var(--surface2);
+    }
+
+    .field .hint {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .form-footer {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-predict {
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      padding: .8rem 2rem;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .btn-predict:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      padding: .8rem 1.5rem;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    #result-box {
+      display: none;
+      margin-top: 2rem;
+      border-radius: var(--card-r);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: slideUp .3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-header {
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .result-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+    }
+
+    .result-sub {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+
+    .result-body {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: .75rem;
+    }
+
+    .prob-label {
+      font-size: .82rem;
+      width: 180px;
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+
+    .prob-bar-wrap {
+      flex: 1;
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .prob-bar {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .6s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .prob-val {
+      font-size: .85rem;
+      font-weight: 600;
+      width: 42px;
+      text-align: right;
+    }
+
+    /* ── Metrics tab ── */
+    .metrics-section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      margin: 2rem 0 1rem;
+      color: var(--text);
+    }
+
+    .metrics-section-title:first-child {
+      margin-top: 0;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+      transition: border-color .2s;
+    }
+
+    .model-card:hover {
+      border-color: var(--accent);
+    }
+
+    .model-card .mc-name {
+      font-weight: 600;
+      font-size: .88rem;
+      margin-bottom: .8rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .mc-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+    }
+
+    .mc-metric {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .mc-metric strong {
+      display: block;
+      font-size: .95rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* tuning table */
+    .tuning-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tuning-table th {
+      text-align: left;
+      padding: .6rem 1rem;
+      background: var(--surface2);
+      color: var(--muted);
+      font-weight: 500;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tuning-table td {
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tuning-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tuning-table tr.after-row {
+      background: rgba(63, 185, 80, .04);
+    }
+
+    .tuning-table tr.after-row td:first-child {
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .tuning-table tr.before-row td:first-child {
+      color: var(--muted);
+    }
+
+    .winner-card {
+      background: rgba(63, 185, 80, .06);
+      border: 1px solid rgba(63, 185, 80, .3);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .winner-icon {
+      font-size: 1.8rem;
+    }
+
+    .winner-label {
+      font-size: .75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .winner-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--accent2);
+    }
+
+    .winner-f1 {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .winner-f1 .f1-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .winner-f1 .f1-label {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .params-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: .8rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .params-box strong {
+      color: var(--text);
+    }
+
+    .eda-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .eda-card,
+    .workflow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .eda-card h3,
+    .workflow-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: .9rem;
+      color: var(--text);
+    }
+
+    .eda-image {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .eda-image.tall {
+      max-height: 340px;
+    }
+
+    .eda-image.wide {
+      max-height: 460px;
+    }
+
+    .insight-box {
+      background: rgba(88, 166, 255, .06);
+      border: 1px solid rgba(88, 166, 255, .22);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .insight-box strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: .55rem;
+    }
+
+    .insight-box ul {
+      margin: 0;
+      padding-left: 1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: .86rem;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .workflow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+    }
+
+    .workflow-kicker {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: .45rem;
+    }
+
+    .workflow-step h4 {
+      font-size: .94rem;
+      margin-bottom: .45rem;
+      color: var(--text);
+    }
+
+    .workflow-step p,
+    .workflow-card p {
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.7;
+    }
+
+    .workflow-code {
+      display: inline-block;
+      margin-top: .75rem;
+      padding: .3rem .6rem;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: .76rem;
+    }
+
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 2rem;
+      max-width: 720px;
+      line-height: 1.75;
+      font-size: .92rem;
+      color: var(--muted);
+    }
+
+    .about-card h3 {
+      font-family: 'DM Serif Display', serif;
+      color: var(--text);
+      font-size: 1.2rem;
+      margin-bottom: .75rem;
+    }
+
+    .about-card p+p {
+      margin-top: 1rem;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(13, 17, 23, .4);
+      border-top-color: #0d1117;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .disclaimer {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      padding: .75rem 1rem;
+      background: rgba(227, 179, 65, .06);
+      border: 1px solid rgba(227, 179, 65, .2);
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      .eda-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="nav-logo">Neuro<span>Scan</span></div>
+    <div class="nav-badge">{{ final_model_name }} · F1 {{ winner_f1 }}</div>
+  </nav>
+
+  <div class="hero">
+    <div class="chip">✦ IT325 Machine Learning</div>
+    <h1>Alzheimer's<br><em>Risk Predictor</em></h1>
+    <p>Enter patient clinical data below to generate an Alzheimer's disease risk assessment powered by a tuned Random
+      Forest classifier trained on 2,149 patient records.</p>
+  </div>
+
+  <div class="container">
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="predict">🧠 Predict</button>
+      <button class="tab-btn" data-tab="eda">🧪 EDA</button>
+      <button class="tab-btn" data-tab="workflow">🔎 Workflow</button>
+      <button class="tab-btn" data-tab="metrics">📊 Model Metrics</button>
+      <button class="tab-btn" data-tab="tuning">⚙️ Tuning Results</button>
+      <button class="tab-btn" data-tab="about">ℹ️ About</button>
+    </div>
+
+    <!-- ── PREDICT ── -->
+    <div class="tab-panel active" id="tab-predict">
+      <form id="predict-form">
+
+        <div class="section-label">Demographics</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Age <span class="req">*</span></label>
+            <input type="number" name="Age" min="60" max="90" placeholder="e.g. 75" required>
+            <span class="hint">Range: 60–90</span>
+          </div>
+          <div class="field">
+            <label>Gender <span class="req">*</span></label>
+            <select name="Gender" required>
+              <option value="" disabled selected>Select gender</option>
+              <option value="0">Female</option>
+              <option value="1">Male</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Education Level <span class="req">*</span></label>
+            <select name="EducationLevel" required>
+              <option value="" disabled selected>Select level</option>
+              <option value="0">None</option>
+              <option value="1">High School</option>
+              <option value="2">Bachelor's</option>
+              <option value="3">Higher</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>BMI <span class="req">*</span></label>
+            <input type="number" name="BMI" step="any" min="15" max="40" placeholder="e.g. 25.0" required>
+            <span class="hint">15 – 40</span>
+          </div>
+        </div>
+
+        <div class="section-label">Lifestyle</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Smoking</label>
+            <select name="Smoking">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Physical Activity (hrs/week) <span class="req">*</span></label>
+            <input type="number" name="PhysicalActivity" step="any" min="0" max="10" placeholder="e.g. 3.5" required>
+            <span class="hint">0 – 10 hrs/week</span>
+          </div>
+        </div>
+
+        <div class="section-label">Medical History</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Family History of Alzheimer's</label>
+            <select name="FamilyHistoryAlzheimers">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cardiovascular Disease</label>
+            <select name="CardiovascularDisease">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Diabetes</label>
+            <select name="Diabetes">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Depression</label>
+            <select name="Depression">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Hypertension</label>
+            <select name="Hypertension">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Head Injury</label>
+            <select name="HeadInjury">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label">Cognitive Assessments</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>MMSE Score <span class="req">*</span></label>
+            <input type="number" name="MMSE" step="any" min="0" max="30" placeholder="e.g. 22.5" required>
+            <span class="hint">Mini-Mental State Exam: 0–30</span>
+          </div>
+          <div class="field">
+            <label>Functional Assessment <span class="req">*</span></label>
+            <input type="number" name="FunctionalAssessment" step="any" min="0" max="10" placeholder="e.g. 6.0"
+              required>
+            <span class="hint">0 – 10</span>
+          </div>
+          <div class="field">
+            <label>Memory Complaints</label>
+            <select name="MemoryComplaints">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Behavioral Problems</label>
+            <select name="BehavioralProblems">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Disorientation</label>
+            <select name="Disorientation">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Difficulty Completing Tasks</label>
+            <select name="DifficultyCompletingTasks">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Forgetfulness</label>
+            <select name="Forgetfulness">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn-predict">
+            <span id="btn-text">Run Prediction</span>
+            <div class="spinner" id="spinner"></div>
+          </button>
+          <button type="button" class="btn-reset" onclick="resetForm()">Clear</button>
+        </div>
+      </form>
+
+      <div id="result-box"></div>
+
+      <div class="disclaimer">
+        ⚠️ <strong>Disclaimer:</strong> This tool is for academic purposes only and does not constitute medical advice.
+        Always consult a qualified healthcare professional for clinical diagnosis.
+      </div>
+    </div>
+
+    <!-- ── EDA ── -->
+    <div class="tab-panel" id="tab-eda">
+      <p class="intro-copy">
+        This section surfaces the exploratory data analysis used before model training so the app shows not just the
+        final predictor, but also the patterns observed in the Alzheimer’s dataset.
+      </p>
+
+      <div class="eda-grid">
+        <div class="eda-card">
+          <h3>Diagnosis Distribution</h3>
+          <img class="eda-image tall" src="{{ url_for('eda_visuals', filename='diagnosis.png') }}"
+            alt="Diagnosis distribution chart">
+        </div>
+
+        <div class="eda-card">
+          <h3>Class Balance Pie Chart</h3>
+          <img class="eda-image tall" src="{{ url_for('eda_visuals', filename='piechart.png') }}"
+            alt="Diagnosis pie chart">
+        </div>
+      </div>
+
+      <div class="eda-card" style="margin-bottom:1.25rem;">
+        <div class="insight-box">
+          <strong>Insights</strong>
+          <ul>
+            <li>64.6% No Alzheimer's (1,389 patients) and 35.4% Alzheimer's (760 patients).</li>
+            <li>The diagnosis distribution and pie chart together show a moderate class imbalance in the dataset.</li>
+            <li>This imbalance supports the use of SMOTE during training so the minority Alzheimer's class is better represented.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="eda-card">
+        <h3>Feature Correlation Heatmap</h3>
+        <img class="eda-image wide" src="{{ url_for('eda_visuals', filename='heatmap.png') }}"
+          alt="Feature correlation heatmap">
+        <div class="insight-box">
+          <strong>Insights</strong>
+          <ul>
+            <li>The strongest predictors of Alzheimer’s disease are Functional Assessment, Memory Complaints, MMSE
+              Score, and Disorientation.</li>
+            <li>These variables show the highest correlation with diagnosis and the clearest separation between
+              patients and non-patients.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORKFLOW ── -->
+    <div class="tab-panel" id="tab-workflow">
+      <p class="intro-copy">
+        For transparency, this tab summarizes what the training pipeline does in
+        <code>train_model.py</code>, mirroring the Alzheimer’s notebook workflow from data loading through model
+        selection.
+      </p>
+
+      <div class="workflow-grid">
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 1</div>
+          <h4>Load and Prepare Data</h4>
+          <p>The dataset is loaded from <code>Gonzales_AlzheimersDisease.csv</code>. <code>PatientID</code> is removed,
+            <code>Diagnosis</code> becomes the target, and all remaining clinical variables are kept as model
+            features.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 2</div>
+          <h4>Split Train and Test Sets</h4>
+          <p>The pipeline performs an 80/20 train-test split with <code>random_state=42</code> to keep evaluation
+            consistent with the notebook implementation.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 3</div>
+          <h4>Scale Features</h4>
+          <p>Numeric inputs are normalized with <code>MinMaxScaler</code> so models compare features on a shared range
+            before classification.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 4</div>
+          <h4>Train 5 Baseline Models</h4>
+          <p>Logistic Regression, K-Nearest Neighbors, Decision Tree, Random Forest, and Naive Bayes are first trained
+            as baseline classifiers.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 5</div>
+          <h4>Handle Class Imbalance</h4>
+          <p>SMOTE is inserted into the training pipeline so the minority Alzheimer’s class is oversampled during model
+            evaluation.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 6</div>
+          <h4>Run 5-Fold Cross-Validation</h4>
+          <p>Each SMOTE-enabled pipeline is scored using stratified 5-fold cross-validation on accuracy, precision,
+            recall, and F1 score.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 7</div>
+          <h4>Tune Top Models</h4>
+          <p>Logistic Regression and Random Forest are selected for <code>GridSearchCV</code> hyperparameter tuning
+            because they emerged as the strongest candidates.</p>
+        </div>
+        <div class="workflow-step">
+          <div class="workflow-kicker">Step 8</div>
+          <h4>Select the Deployed Winner</h4>
+          <p>The tuned model with the better test-set F1 score is saved and deployed in this web app as the final
+            predictor.</p>
+        </div>
+      </div>
+
+      <div class="workflow-card">
+        <h3>Saved Outputs</h3>
+        <p>The workflow stores the chosen classifier in <code>models/rf_model.pkl</code> and the evaluation summary in
+          <code>models/model_metrics.json</code>, which powers the tabs shown in this interface.</p>
+        <span class="workflow-code">Transparency source: train_model.py</span>
+      </div>
+    </div>
+
+    <!-- ── METRICS (CV) ── -->
+    <div class="tab-panel" id="tab-metrics">
+      <p class="intro-copy">
+        Five classifiers were evaluated via 5-fold stratified cross-validation with SMOTE oversampling. Random Forest
+        and Logistic Regression were selected as the top 2 models for hyperparameter tuning.
+      </p>
+      <div class="metrics-grid">
+        {% for name, cv in cv_results.items() %}
+        <div class="model-card {% if name in ['Random Forest', 'Logistic Regression'] %}{% endif %}">
+          <div class="mc-name">
+            {{ name }}
+            {% if name in ['Random Forest', 'Logistic Regression'] %}
+            <span
+              style="font-size:.65rem;background:rgba(88,166,255,.15);color:var(--accent);border-radius:99px;padding:.15rem .55rem;font-weight:600;">Tuned</span>
+            {% endif %}
+          </div>
+          <div class="mc-metrics">
+            <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Accuracy']*100) }}%</strong>CV Accuracy</div>
+            <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Precision']*100) }}%</strong>CV Precision</div>
+            <div class="mc-metric"><strong>{{ "%.1f"|format(cv['CV Recall']*100) }}%</strong>CV Recall</div>
+            <div class="mc-metric"><strong>{{ "%.4f"|format(cv['CV F1 Score']) }}</strong>CV F1 Score</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ── TUNING ── -->
+    <div class="tab-panel" id="tab-tuning">
+      <p class="intro-copy">
+        GridSearchCV (5-fold, scoring=F1) was applied to the top 2 models. The winner is deployed in this application.
+      </p>
+
+      <!-- Winner -->
+      <div class="winner-card">
+        <div class="winner-icon">🏆</div>
+        <div>
+          <div class="winner-label">Deployed Model</div>
+          <div class="winner-name">{{ final_model_name }}</div>
+        </div>
+        <div class="winner-f1">
+          <div class="f1-val">{{ winner_f1 }}</div>
+          <div class="f1-label">Test F1 Score</div>
+        </div>
+      </div>
+
+      <!-- Best params -->
+      <div class="metrics-section-title">Best Hyperparameters Found</div>
+      <div class="params-box">
+        <strong>Logistic Regression:</strong>
+        {% for k, v in best_lr_params.items() %}
+        {{ k.replace('model__','') }} = {{ v }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+        <br>
+        <strong>Random Forest:</strong>
+        {% for k, v in best_rf_params.items() %}
+        {{ k.replace('model__','') }} = {{ v }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Before vs After table -->
+      <div class="metrics-section-title">Before vs After Tuning</div>
+      <table class="tuning-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Accuracy</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1 Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name, m in tuning_results.items() %}
+          <tr class="{{ 'after-row' if 'After' in name else 'before-row' }}">
+            <td>{{ name }}</td>
+            <td>{{ "%.4f"|format(m['Accuracy']) }}</td>
+            <td>{{ "%.4f"|format(m['Precision']) }}</td>
+            <td>{{ "%.4f"|format(m['Recall']) }}</td>
+            <td>{{ "%.4f"|format(m['F1 Score']) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── ABOUT ── -->
+    <div class="tab-panel" id="tab-about">
+      <div class="about-card">
+        <h3>About This Project</h3>
+        <p>NeuroScan is an end-to-end machine learning web application built for <strong>IT325 – Machine
+            Learning</strong> (2nd Sem SY 2025–2026). It predicts the likelihood of Alzheimer's Disease diagnosis from
+          structured clinical patient data.</p>
+        <p><strong>Dataset:</strong> <em>Gonzales_AlzheimersDisease.csv</em> — 2,149 patient records × 21 features.
+          Target: <code>Diagnosis</code> (0 = No AD, 1 = AD). Class imbalance: 64.6% / 35.4%.</p>
+        <p><strong>Pipeline:</strong> MinMaxScaler → SMOTE → 5 classifiers compared via 5-fold CV → Top 2 (Random
+          Forest, Logistic Regression) tuned with GridSearchCV → Winner selected by F1.</p>
+        <p><strong>Deployed Model:</strong> {{ final_model_name }} — Test F1 Score: {{ winner_f1 }}</p>
+        <p><strong>Stack:</strong> Python · scikit-learn · imbalanced-learn · Flask · HTML/CSS/JS</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('predict-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {};
+      new FormData(e.target).forEach((v, k) => data[k] = v);
+
+      document.getElementById('btn-text').textContent = 'Analyzing…';
+      document.getElementById('spinner').style.display = 'block';
+      document.querySelector('.btn-predict').disabled = true;
+
+      try {
+        const res = await fetch('/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const json = await res.json();
+        json.error ? showError(json.error) : showResult(json);
+      } catch (err) {
+        showError('Network error. Is the server running?');
+      } finally {
+        document.getElementById('btn-text').textContent = 'Run Prediction';
+        document.getElementById('spinner').style.display = 'none';
+        document.querySelector('.btn-predict').disabled = false;
+      }
+    });
+
+    function showResult(json) {
+      const isAD = json.prediction === 1;
+      const color = isAD ? '#f85149' : '#3fb950';
+      const box = document.getElementById('result-box');
+      box.style.borderColor = isAD ? 'rgba(248,81,73,.3)' : 'rgba(63,185,80,.3)';
+      box.innerHTML = `
+    <div class="result-header" style="background:${isAD ? 'rgba(248,81,73,.06)' : 'rgba(63,185,80,.06)'}">
+      <div class="result-icon" style="background:${isAD ? 'rgba(248,81,73,.1)' : 'rgba(63,185,80,.1)'};border:2px solid ${color}">${isAD ? '⚠️' : '✅'}</div>
+      <div>
+        <div class="result-title" style="color:${color}">${json.label}</div>
+        <div class="result-sub">Based on provided clinical features · {{ final_model_name }}</div>
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="prob-row">
+        <div class="prob-label">No Alzheimer's</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:0%;background:#3fb950" data-w="${json.prob_no_ad}"></div></div>
+        <div class="prob-val" style="color:#3fb950">${json.prob_no_ad}%</div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-label">Alzheimer's Detected</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:0%;background:#f85149" data-w="${json.prob_ad}"></div></div>
+        <div class="prob-val" style="color:#f85149">${json.prob_ad}%</div>
+      </div>
+    </div>`;
+      box.style.display = 'block';
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => box.querySelectorAll('.prob-bar').forEach(b => b.style.width = b.dataset.w + '%'), 80);
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('result-box');
+      box.style.borderColor = 'rgba(248,81,73,.3)';
+      box.innerHTML = `<div class="result-header" style="background:rgba(248,81,73,.06)"><div class="result-icon" style="border:2px solid #f85149">❌</div><div><div class="result-title" style="color:#f85149">Error</div><div class="result-sub">${msg}</div></div></div>`;
+      box.style.display = 'block';
+    }
+
+    function resetForm() {
+      document.getElementById('predict-form').reset();
+      const box = document.getElementById('result-box');
+      box.style.display = 'none';
+      box.innerHTML = '';
+    }
+  </script>
+</body>
+
+</html>

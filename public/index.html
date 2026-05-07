@@ -347,19 +347,6 @@
       color: var(--text);
     }
 
-    .form-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--card-r);
-      padding: 2rem;
-    }
-    .form-card h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-    }
-
     .predict-layout {
       display: grid;
       grid-template-columns: minmax(0, 2.3fr) minmax(320px, 1fr);
@@ -370,19 +357,6 @@
     .predict-sidebar {
       position: sticky;
       top: 100px;
-    }
-
-    .result-placeholder-empty {
-      border: 1px dashed var(--border);
-      border-radius: var(--card-r);
-      padding: 3rem 2rem;
-      text-align: center;
-      background: rgba(255,255,255,0.01);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 240px;
     }
 
     #result-box {
@@ -1157,9 +1131,11 @@
       .predict-layout {
         grid-template-columns: 1fr;
       }
+
       .predict-sidebar {
         position: static;
       }
+
       .metrics-layout {
         grid-template-columns: 1fr;
       }
@@ -1234,7 +1210,7 @@
   <nav>
     <div class="nav-logo">NeuroScan</span><img src="/neuroscan.png" alt="NeuroScan logo"></div>
     <div class="nav-actions">
-      <div class="nav-badge" id="nav-badge">Loading...</div>
+      <div class="nav-badge" id="nav-badge">Connecting to backend...</div>
       <a class="nav-link" href="https://github.com/bruisedSoup/ml_alzheimers" target="_blank" rel="noopener noreferrer"
         aria-label="Open GitHub repository" title="Open GitHub repository">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1267,171 +1243,171 @@
     <!-- ── PREDICT ── -->
     <div class="tab-panel active" id="tab-predict">
       <div class="predict-layout">
-        <div class="predict-main form-card">
-          <h3>Your Information</h3>
+        <div class="predict-main">
           <form id="predict-form">
 
-        <div class="section-label">Demographics</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Age <span class="req">*</span></label>
-            <input type="number" name="Age" min="60" max="90" placeholder="e.g. 75" required>
-            <span class="hint">Range: 60–90</span>
-          </div>
-          <div class="field">
-            <label>Gender <span class="req">*</span></label>
-            <select name="Gender" required>
-              <option value="" disabled selected>Select gender</option>
-              <option value="0">Female</option>
-              <option value="1">Male</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Education Level <span class="req">*</span></label>
-            <select name="EducationLevel" required>
-              <option value="" disabled selected>Select level</option>
-              <option value="0">None</option>
-              <option value="1">High School</option>
-              <option value="2">Bachelor's</option>
-              <option value="3">Higher</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>BMI <span class="req">*</span></label>
-            <input type="number" name="BMI" step="any" min="15" max="40" placeholder="e.g. 25 or 25.0" required>
-            <span class="hint">15 – 40</span>
-          </div>
-        </div>
+            <div class="section-label">Demographics</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Age <span class="req">*</span></label>
+                <input type="number" name="Age" min="60" max="90" placeholder="e.g. 75" required>
+                <span class="hint">Range: 60–90</span>
+              </div>
+              <div class="field">
+                <label>Gender <span class="req">*</span></label>
+                <select name="Gender" required>
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="0">Female</option>
+                  <option value="1">Male</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Education Level <span class="req">*</span></label>
+                <select name="EducationLevel" required>
+                  <option value="" disabled selected>Select level</option>
+                  <option value="0">None</option>
+                  <option value="1">High School</option>
+                  <option value="2">Bachelor's</option>
+                  <option value="3">Higher</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>BMI <span class="req">*</span></label>
+                <input type="number" name="BMI" step="any" min="15" max="40" placeholder="e.g. 25 or 25.0" required>
+                <span class="hint">15 – 40</span>
+              </div>
+            </div>
 
-        <div class="section-label">Lifestyle</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Smoking</label>
-            <select name="Smoking">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Physical Activity (hrs/week) <span class="req">*</span></label>
-            <input type="number" name="PhysicalActivity" step="any" min="0" max="10" placeholder="e.g. 3 or 3.5"
-              required>
-            <span class="hint">0 – 10 hrs/week</span>
-          </div>
-        </div>
+            <div class="section-label">Lifestyle</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Smoking</label>
+                <select name="Smoking">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Physical Activity (hrs/week) <span class="req">*</span></label>
+                <input type="number" name="PhysicalActivity" step="any" min="0" max="10" placeholder="e.g. 3 or 3.5"
+                  required>
+                <span class="hint">0 – 10 hrs/week</span>
+              </div>
+            </div>
 
-        <div class="section-label">Medical History</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Family History of Alzheimer's</label>
-            <select name="FamilyHistoryAlzheimers">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Cardiovascular Disease</label>
-            <select name="CardiovascularDisease">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Diabetes</label>
-            <select name="Diabetes">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Depression</label>
-            <select name="Depression">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Hypertension</label>
-            <select name="Hypertension">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Head Injury</label>
-            <select name="HeadInjury">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-        </div>
+            <div class="section-label">Medical History</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Family History of Alzheimer's</label>
+                <select name="FamilyHistoryAlzheimers">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Cardiovascular Disease</label>
+                <select name="CardiovascularDisease">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Diabetes</label>
+                <select name="Diabetes">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Depression</label>
+                <select name="Depression">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Hypertension</label>
+                <select name="Hypertension">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Head Injury</label>
+                <select name="HeadInjury">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+            </div>
 
-        <div class="section-label">Cognitive Assessments</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>MMSE Score <span class="req">*</span></label>
-            <input type="number" name="MMSE" step="any" min="0" max="30" placeholder="e.g. 22 or 22.5" required>
-            <span class="hint">Mini-Mental State Exam: 0–30</span>
-          </div>
-          <div class="field">
-            <label>Functional Assessment <span class="req">*</span></label>
-            <input type="number" name="FunctionalAssessment" step="any" min="0" max="10" placeholder="e.g. 6 or 6.0"
-              required>
-            <span class="hint">0 – 10</span>
-          </div>
-          <div class="field">
-            <label>Memory Complaints</label>
-            <select name="MemoryComplaints">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Behavioral Problems</label>
-            <select name="BehavioralProblems">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Disorientation</label>
-            <select name="Disorientation">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Difficulty Completing Tasks</label>
-            <select name="DifficultyCompletingTasks">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Forgetfulness</label>
-            <select name="Forgetfulness">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-        </div>
+            <div class="section-label">Cognitive Assessments</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>MMSE Score <span class="req">*</span></label>
+                <input type="number" name="MMSE" step="any" min="0" max="30" placeholder="e.g. 22 or 22.5" required>
+                <span class="hint">Mini-Mental State Exam: 0–30</span>
+              </div>
+              <div class="field">
+                <label>Functional Assessment <span class="req">*</span></label>
+                <input type="number" name="FunctionalAssessment" step="any" min="0" max="10" placeholder="e.g. 6 or 6.0"
+                  required>
+                <span class="hint">0 – 10</span>
+              </div>
+              <div class="field">
+                <label>Memory Complaints</label>
+                <select name="MemoryComplaints">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Behavioral Problems</label>
+                <select name="BehavioralProblems">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Disorientation</label>
+                <select name="Disorientation">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Difficulty Completing Tasks</label>
+                <select name="DifficultyCompletingTasks">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Forgetfulness</label>
+                <select name="Forgetfulness">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+            </div>
 
-        <div class="form-footer">
-          <button type="submit" class="btn-predict">
-            <span id="btn-text">Run Prediction</span>
-            <div class="spinner" id="spinner"></div>
-          </button>
-          <button type="button" class="btn-reset" onclick="resetForm()">Clear</button>
-        </div>
-      </form>
+            <div class="form-footer">
+              <button type="submit" class="btn-predict">
+                <span id="btn-text">Run Prediction</span>
+                <div class="spinner" id="spinner"></div>
+              </button>
+              <button type="button" class="btn-reset" onclick="resetForm()">Clear</button>
+            </div>
+          </form>
 
+          <div class="disclaimer">
+            ⚠️ <strong>Disclaimer:</strong> This tool is for academic purposes only and does not constitute medical
+            advice.
+            Always consult a qualified healthcare professional for clinical diagnosis.
+          </div>
         </div>
 
         <div class="predict-sidebar">
-          <div id="result-placeholder" class="result-placeholder-empty">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4;">🧠</div>
-            <p style="font-size: 0.9rem; line-height: 1.6; color: var(--muted);">Enter patient details on the left and click <strong>Run Prediction</strong> to see the Alzheimer's risk assessment here.</p>
-          </div>
           <div id="result-box"></div>
         </div>
       </div>
@@ -1447,14 +1423,12 @@
       <div class="eda-grid">
         <div class="eda-card">
           <h3>Diagnosis Distribution</h3>
-          <img class="eda-image tall" src="/eda_visuals/diagnosis.png"
-            alt="Diagnosis distribution chart">
+          <img class="eda-image tall" src="/eda_visuals/diagnosis.png" alt="Diagnosis distribution chart">
         </div>
 
         <div class="eda-card">
           <h3>Class Balance Pie Chart</h3>
-          <img class="eda-image tall" src="/eda_visuals/piechart.png"
-            alt="Diagnosis pie chart">
+          <img class="eda-image tall" src="/eda_visuals/piechart.png" alt="Diagnosis pie chart">
         </div>
       </div>
 
@@ -1472,8 +1446,7 @@
 
       <div class="eda-card">
         <h3>Feature Correlation Heatmap</h3>
-        <img class="eda-image wide" src="/eda_visuals/heatmap.png"
-          alt="Feature correlation heatmap">
+        <img class="eda-image wide" src="/eda_visuals/heatmap.png" alt="Feature correlation heatmap">
         <div class="insight-box">
           <strong>Insights</strong>
           <ul>
@@ -1673,69 +1646,68 @@
         <div id="featured-model"></div>
         <div class="metrics-side" id="metrics-side"></div>
       </div>
-    </div>
 
-    <!-- ── TUNING ── -->
-    <div class="tab-panel" id="tab-tuning">
-      <p class="intro-copy">
-        GridSearchCV (5-fold, scoring=F1) was applied to the top 2 models. The winner is deployed in this application.
-      </p>
+      <!-- ?????? TUNING ?????? -->
+      <div class="tab-panel" id="tab-tuning">
+        <p class="intro-copy">
+          GridSearchCV (5-fold, scoring=F1) was applied to the top 2 models. The winner is deployed in this application.
+        </p>
 
-      <!-- Winner -->
-      <div class="winner-card">
-        <div class="winner-icon">🏆</div>
-        <div>
-          <div class="winner-label">Deployed Model</div>
-          <div class="winner-name" id="winner-name">Loading...</div>
+        <!-- Winner -->
+        <div class="winner-card">
+          <div class="winner-icon">🏆</div>
+          <div>
+            <div class="winner-label">Deployed Model</div>
+            <div class="winner-name" id="winner-name">Loading...</div>
+          </div>
+          <div class="winner-f1">
+            <div class="f1-val" id="winner-f1">--</div>
+            <div class="f1-label">Test F1 Score</div>
+          </div>
         </div>
-        <div class="winner-f1">
-          <div class="f1-val" id="winner-f1">–</div>
-          <div class="f1-label">Test F1 Score</div>
+
+        <!-- Best params -->
+        <div class="metrics-section-title">Best Hyperparameters Found</div>
+        <div class="params-box" id="params-box">Loading hyperparameters...</div>
+
+        <!-- Before vs After table -->
+        <div class="metrics-section-title">Before vs After Tuning</div>
+        <div class="table-wrap">
+          <table class="tuning-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Accuracy</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1 Score</th>
+              </tr>
+            </thead>
+            <tbody id="tuning-table-body"></tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Best params -->
-      <div class="metrics-section-title">Best Hyperparameters Found</div>
-      <div class="params-box" id="params-box">Loading…</div>
-
-      <!-- Before vs After table -->
-      <div class="metrics-section-title">Before vs After Tuning</div>
-      <div class="table-wrap">
-        <table class="tuning-table">
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Accuracy</th>
-              <th>Precision</th>
-              <th>Recall</th>
-              <th>F1 Score</th>
-            </tr>
-          </thead>
-          <tbody id="tuning-table-body"></tbody>
-        </table>
+      <!-- ── ABOUT ── -->
+      <div class="tab-panel" id="tab-about">
+        <div class="about-card">
+          <h3>About This Project</h3>
+          <p>NeuroScan is an end-to-end machine learning web application built for <strong>IT325 – Machine
+              Learning</strong> (2nd Sem SY 2025–2026). It predicts the likelihood of Alzheimer's Disease diagnosis from
+            structured clinical patient data.</p>
+          <p><strong>Dataset:</strong> <em>Gonzales_AlzheimersDisease.csv</em> — 2,149 patient records × 21 features.
+            Target: <code>Diagnosis</code> (0 = No AD, 1 = AD). Class imbalance: 64.6% / 35.4%.</p>
+          <p><strong>Pipeline:</strong> MinMaxScaler → SMOTE → 5 classifiers compared via 5-fold CV → Top 2 (Random
+            Forest, Logistic Regression) tuned with GridSearchCV → Winner selected by F1.</p>
+          <p id="about-model-line"><strong>Deployed Model:</strong> Loading...</p>
+          <p><strong>Stack:</strong> Python · scikit-learn · imbalanced-learn · Flask · HTML/CSS/JS</p>
+        </div>
       </div>
+
     </div>
 
-    <!-- ── ABOUT ── -->
-    <div class="tab-panel" id="tab-about">
-      <div class="about-card">
-        <h3>About This Project</h3>
-        <p>NeuroScan is an end-to-end machine learning web application built for <strong>IT325 – Machine
-            Learning</strong> (2nd Sem SY 2025–2026). It predicts the likelihood of Alzheimer's Disease diagnosis from
-          structured clinical patient data.</p>
-        <p><strong>Dataset:</strong> <em>Gonzales_AlzheimersDisease.csv</em> — 2,149 patient records × 21 features.
-          Target: <code>Diagnosis</code> (0 = No AD, 1 = AD). Class imbalance: 64.6% / 35.4%.</p>
-        <p><strong>Pipeline:</strong> MinMaxScaler → SMOTE → 5 classifiers compared via 5-fold CV → Top 2 (Random
-          Forest, Logistic Regression) tuned with GridSearchCV → Winner selected by F1.</p>
-        <p id="about-model-line"><strong>Deployed Model:</strong> Loading…</p>
-        <p><strong>Stack:</strong> Python · scikit-learn · imbalanced-learn · Flask · HTML/CSS/JS</p>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="/config.js"></script>
-  <script src="/app.js"></script>
+    <script src="/config.js"></script>
+    <script src="/app.js"></script>
 </body>
 
 </html>
